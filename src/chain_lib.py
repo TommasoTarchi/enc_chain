@@ -16,17 +16,17 @@ class Rnd_grids(Dataset):
     def __init__(self, y_size, x_size, transform=None):
         # loading images
         with gzip.open('../data/original_dataset-ubyte.gz', 'rb') as f:
-            self.images = np.frombuffer(f.read(), dtype=np.uint8, offset=16)
+            self.images = np.frombuffer(f.read(), dtype=np.uint8, offset=0)
             self.images = self.images.reshape((-1, y_size, x_size, 1))
 
         self.transform = transform
 
     def __len__(self):
-        return len(self.images.shape[0])
+        return self.images.shape[0]
 
     def __getitem__(self, idx):
         # extracting the sampled images
-        image = self.images[idx]
+        image = self.images[idx].copy()
 
         # transforming output (if required)
         if self.transform:

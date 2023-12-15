@@ -9,11 +9,12 @@ import numpy as np
 BATCH_SIZE = 32
 data_transforms = transforms.ToTensor()
 
-train_dataset = Rnd_grids(transform=data_transforms)
+train_dataset = Rnd_grids(transform=data_transforms, y_size=10, x_size=20)
 
 train_loader = DataLoader(dataset=train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 
 
+# function to display images
 def imshow(img) -> None:
     npimg = img.numpy()
     plt.axis("off")

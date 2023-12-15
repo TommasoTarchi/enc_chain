@@ -31,16 +31,16 @@ if __name__ == "__main__":
     x_dist = args.x_dist
 
     # initializing the dataset
-    grids = np.zeros((dset_size, y_size, x_size), dtype=np.int8)
+    grids = np.zeros((dset_size, y_size, x_size, 1), dtype=np.int8)
 
-    y_coord = None
+    y_coord = np.empty(dset_size)
     if y_dist == 'binomial':
         success_prob = 0.9
         y_coord = np.random.binomial(y_size-1, success_prob, dset_size)
     elif y_dist == 'uniform':
         y_coord = np.random.randint(0, y_size, dset_size)
 
-    x_coord = None
+    x_coord = np.empty(dset_size)
     if x_dist == 'binomial':
         success_prob = 0.5
         x_coord = np.random.binomial(x_size-1, success_prob, dset_size)
@@ -49,9 +49,9 @@ if __name__ == "__main__":
 
     # randomly turning on one pixel
     for i in range(grids.shape[0]):
-        grids[i][y_coord[i]][x_coord[i]] = 1
+        grids[i][y_coord[i]][x_coord[i]][0] = 1
 
     # loading dataset to file
-    grids_byte = grids.tobytes()
+    grids_byte = grids.copy().tobytes()
     with gzip.open('../data/original_dataset-ubyte.gz', 'wb') as f:
         f.write(grids_byte)
