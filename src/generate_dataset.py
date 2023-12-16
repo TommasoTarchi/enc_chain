@@ -1,3 +1,7 @@
+# this script can be used to generate the synthetic dataset
+# to train the first model of the chain
+
+
 from chain_lib import positive_int
 import argparse
 import gzip
@@ -5,9 +9,9 @@ import numpy as np
 
 
 # default parameters
-dset_size_dflt = 10000
-y_size_dflt = 200
-x_size_dflt = 200
+dset_size_dflt = 30000
+y_size_dflt = 100
+x_size_dflt = 100
 y_dist_dflt = 'binomial'
 x_dist_dflt = 'binomial'
 
@@ -31,11 +35,11 @@ if __name__ == "__main__":
     x_dist = args.x_dist
 
     # initializing the dataset
-    grids = np.zeros((dset_size, y_size, x_size, 1), dtype=np.int8)
+    grids = np.zeros((dset_size, y_size, x_size), dtype=np.ubyte)
 
     y_coord = np.empty(dset_size)
     if y_dist == 'binomial':
-        success_prob = 0.9
+        success_prob = 0.8
         y_coord = np.random.binomial(y_size-1, success_prob, dset_size)
     elif y_dist == 'uniform':
         y_coord = np.random.randint(0, y_size, dset_size)
@@ -49,7 +53,7 @@ if __name__ == "__main__":
 
     # randomly turning on one pixel
     for i in range(grids.shape[0]):
-        grids[i][y_coord[i]][x_coord[i]][0] = 1
+        grids[i][y_coord[i]][x_coord[i]] = 255
 
     # loading dataset to file
     grids_byte = grids.copy().tobytes()

@@ -1,2 +1,6 @@
 # pycache
 **/__pycache__
+
+# intermediate datasets
+data/*
+!data/original_dataset-ubyte.gz
