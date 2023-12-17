@@ -1,5 +1,5 @@
 # this script can be used to generate the synthetic dataset
-# to train the first model of the chain
+# to train the first encoder of the chain
 
 
 from chain_lib import positive_int
@@ -9,11 +9,11 @@ import numpy as np
 
 
 # default parameters
-dset_size_dflt = 30000
-y_size_dflt = 100
-x_size_dflt = 100
-y_dist_dflt = 'binomial'
-x_dist_dflt = 'binomial'
+dset_size_dflt = 30000   # size of the dataset
+y_size_dflt = 50   # height of the grids
+x_size_dflt = 50   # width of the grids
+y_dist_dflt = 'binomial'   # distribution of the y coordinates
+x_dist_dflt = 'binomial'   # distribution of the x coordinates
 
 
 if __name__ == "__main__":
@@ -37,6 +37,7 @@ if __name__ == "__main__":
     # initializing the dataset
     grids = np.zeros((dset_size, y_size, x_size), dtype=np.ubyte)
 
+    # extracting the y coordinates
     y_coord = np.empty(dset_size)
     if y_dist == 'binomial':
         success_prob = 0.8
@@ -44,6 +45,7 @@ if __name__ == "__main__":
     elif y_dist == 'uniform':
         y_coord = np.random.randint(0, y_size, dset_size)
 
+    # extracting the x coordinates
     x_coord = np.empty(dset_size)
     if x_dist == 'binomial':
         success_prob = 0.5

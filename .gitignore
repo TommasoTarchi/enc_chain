@@ -4,3 +4,9 @@
 # intermediate datasets
 data/*
 !data/original_dataset-ubyte.gz
+!data/final_dataset-ubyte.gz
+
+# intermediate distributions
+distributions/*
+!distributions/original_distribution.png
+!distributions/final_distribution.png

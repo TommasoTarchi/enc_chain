@@ -1,13 +1,14 @@
-# library containing all classes needed for simulations
+# library containing all classes and functions needed in scripts
 
 
 import gzip
 import argparse
 import numpy as np
 from torch.utils.data import Dataset
+import matplotlib.pyplot as plt
 
 
-# needed for input parameters of the first model
+# needed for input parameters of generate_dataset.py
 def positive_int(value):
     ivalue = int(value)
     if ivalue <= 0:
@@ -16,7 +17,7 @@ def positive_int(value):
 
 
 # class of random grids used as samples in the first dataset
-# (the one used to train the first model of the chain)
+# (the one used to train the first autoencoder of the chain)
 class Rnd_grids(Dataset):
 
     def __init__(self, file_path, y_size, x_size, transform=None):
@@ -39,3 +40,16 @@ class Rnd_grids(Dataset):
             image = self.transform(image)
 
         return image
+
+
+# function to show or save grid images
+def imshow(img, file_path=None):
+
+    npimg = img.numpy()
+    plt.axis("off")
+    plt.imshow(np.transpose(npimg, axes=(1, 2, 0)))
+
+    if file_path is not None:
+        plt.savefig(file_path, bbox_inches='tight', pad_inches=0.1)
+    else:
+        plt.show()
