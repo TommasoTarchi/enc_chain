@@ -1,3 +1,7 @@
+# this script can be used to compute the distribution
+# of the turned on pixels in a given datatset
+
+
 from chain_lib import Rnd_grids
 from chain_lib import positive_int
 from chain_lib import imshow
@@ -52,5 +56,5 @@ if __name__ == "__main__":
     maxval = th.max(point_distribution)
     point_distribution /= maxval
 
-    # showing the computed distribution
+    # saving the computed distribution
     imshow(make_grid(point_distribution), file_path=plot_path)

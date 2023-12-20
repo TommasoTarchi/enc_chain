@@ -9,11 +9,11 @@ import numpy as np
 
 
 # default parameters
-dset_size_dflt = 30000   # size of the dataset
-y_size_dflt = 50   # height of the grids
-x_size_dflt = 50   # width of the grids
-y_dist_dflt = 'binomial'   # distribution of the y coordinates
-x_dist_dflt = 'binomial'   # distribution of the x coordinates
+dset_size_dflt = 30000  # size of the dataset
+y_size_dflt = 50  # height of the grids
+x_size_dflt = 50  # width of the grids
+y_dist_dflt = 'binomial'  # distribution of the y coordinates
+x_dist_dflt = 'binomial'  # distribution of the x coordinates
 
 
 if __name__ == "__main__":

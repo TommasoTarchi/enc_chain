@@ -10,3 +10,6 @@ data/*
 distributions/*
 !distributions/original_distribution.png
 !distributions/final_distribution.png
+
+# notes
+notes.txt
