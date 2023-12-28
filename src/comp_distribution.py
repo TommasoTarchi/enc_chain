@@ -2,7 +2,7 @@
 # of the turned on pixels in a given datatset
 
 
-from chain_lib import Rnd_grids
+from chain_lib import Points
 from chain_lib import positive_int
 from chain_lib import imshow
 from torchvision import transforms
@@ -40,7 +40,7 @@ if __name__ == "__main__":
 
     # defining the dataloader
     data_transforms = transforms.ToTensor()
-    dset = Rnd_grids(dset_path, y_size, x_size, data_transforms)
+    dset = Points(dset_path, y_size, x_size, data_transforms)
     dset_loader = DataLoader(dataset=dset, batch_size=dset_size)
 
     # initializing the point distribution

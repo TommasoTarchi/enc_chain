@@ -9,6 +9,7 @@ import numpy as np
 
 
 # default parameters
+dset_path_dflt = '../data/original_dataset-ubyte.gz'  # path to save data
 dset_size_dflt = 30000  # size of the dataset
 y_size_dflt = 50  # height of the grids
 x_size_dflt = 50  # width of the grids
@@ -20,6 +21,7 @@ if __name__ == "__main__":
 
     # getting parameters
     parser = argparse.ArgumentParser()
+    parser.add_argument('--dset_path', type=str, default=dset_path_dflt)
     parser.add_argument('--dset_size', type=positive_int, default=dset_size_dflt)
     parser.add_argument('--y_size', type=positive_int, default=y_size_dflt)
     parser.add_argument('--x_size', type=positive_int, default=x_size_dflt)
@@ -28,6 +30,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    dset_path = args.dset_path
     dset_size = args.dset_size
     y_size = args.y_size
     x_size = args.x_size
@@ -59,5 +62,5 @@ if __name__ == "__main__":
 
     # loading dataset to file
     grids_byte = grids.copy().tobytes()
-    with gzip.open('../data/original_dataset-ubyte.gz', 'wb') as f:
+    with gzip.open(dset_path, 'wb') as f:
         f.write(grids_byte)
