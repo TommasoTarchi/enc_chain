@@ -304,9 +304,10 @@ def generate_dset(model, device, dset_path, dset_size=dset_size_dflt):
 
     # generating syntetic dataset
     dset = model.get_samples(dset_size)
+    dset = dset.view(-1, 1, 50, 50)
 
     # writing dataset to file
-    dset_np = dset.detach().clone().numpy().astype()  # converting to numpy array
+    dset_np = dset.detach().clone().numpy()  # converting to numpy array
     dset_byte = dset_np.tobytes()  # converting to byte array
     with gzip.open(dset_path, 'wb') as f:
         f.write(dset_byte)

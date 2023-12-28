@@ -15,7 +15,7 @@ import torch as th
 
 
 # default parameters
-num_models_dflt = 10  # number of autoencoders in the chain
+num_models_dflt = 20  # number of autoencoders in the chain
 model_type_dflt = 'FC'  # autoencoder type
 dset_dir_dflt = '../data/'  # directory containing data
 y_size_dflt = 50  # height of grids
