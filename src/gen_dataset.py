@@ -9,7 +9,7 @@ import numpy as np
 
 
 # default parameters
-dset_path_dflt = '../data/original_dataset-ubyte.gz'  # path to save data
+dset_path_dflt = '../data/original_dset-ubyte.gz'  # path to save data
 dset_size_dflt = 30000  # size of the dataset
 y_size_dflt = 20  # height of the grids
 x_size_dflt = 20  # width of the grids
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     # extracting the x coordinates
     x_coord = np.empty(dset_size)
     if x_dist == 'binomial':
-        success_prob = 0.5
+        success_prob = 0.3
         x_coord = np.random.binomial(x_size-1, success_prob, dset_size)
     elif x_dist == 'uniform':
         x_coord = np.random.randint(0, x_size, dset_size)

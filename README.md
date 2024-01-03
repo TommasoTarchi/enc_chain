@@ -52,7 +52,7 @@ intermediate datasets
 2. Create an empty directory inside `data/` to store distributions related to 
 initial, final and intermediate datasets
 3. Inside the directory created at point 1., create an initial dataset called 
-`original_dataset-ubyte.gz` using the `gen_dataset.py` script (set the desired 
+`original_dset-ubyte.gz` using the `gen_dset.py` script (set the desired 
 parameters by using the script's command line arguments)
 4. Run the chain using `make_chain.py`, setting the desired command line arguments
 (**notice** that the arguments passed to this script must be coherent to the ones
