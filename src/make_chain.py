@@ -10,20 +10,21 @@
 import argparse
 import time
 from chain_lib import positive_int
-from chain_lib import FC_AutoEncoder
-from chain_lib import Conv_AutoEncoder
-from chain_lib import train_AutoEncoder
+from chain_lib import VAE_FC1
+from chain_lib import VAE_FC2
+from chain_lib import VAE_Conv
+from chain_lib import train_VAE
 from chain_lib import generate_dset
 import torch as th
 
 
 # default parameters
 num_models_dflt = 20  # number of autoencoders in the chain
-model_type_dflt = 'FC'  # autoencoder type
-dset_dir_dflt = '../data/'  # directory containing data
-y_size_dflt = 30  # height of grids
-x_size_dflt = 30  # width of grids
-dset_size_dflt = 20000  # dataset size
+model_type_dflt = 'conv'  # autoencoder type
+dset_dir_dflt = '../data'  # directory containing data
+y_size_dflt = 20  # height of grids
+x_size_dflt = 20  # width of grids
+dset_size_dflt = 30000  # dataset size
 latent_size_dflt = 8  # size of latent space
 
 
@@ -32,7 +33,7 @@ if __name__ == "__main__":
     # getting parameters
     parser = argparse.ArgumentParser()
     parser.add_argument('--num_models', type=positive_int, default=num_models_dflt)
-    parser.add_argument('--model_type', type=str, choices=['FC', 'conv'], default=model_type_dflt)
+    parser.add_argument('--model_type', type=str, choices=['FC1', 'FC2', 'conv'], default=model_type_dflt)
     parser.add_argument('--dset_dir', type=str, default=dset_dir_dflt)
     parser.add_argument('--y_size', type=positive_int, default=y_size_dflt)
     parser.add_argument('--x_size', type=positive_int, default=x_size_dflt)
@@ -59,29 +60,31 @@ if __name__ == "__main__":
 
         # instatiating the base model (autoencoder)
         base_model = None
-        if model_type == 'FC':
-            base_model = FC_AutoEncoder(y_size, x_size, latent_size, device)
+        if model_type == 'FC1':
+            base_model = VAE_FC1(y_size, x_size, latent_size, device)
+        elif model_type == 'FC2':
+            base_model = VAE_FC2(y_size, x_size, latent_size, device)
         elif model_type == 'conv':
-            base_model = Conv_AutoEncoder(y_size, x_size, latent_size, device)
+            base_model = VAE_Conv(y_size, x_size, latent_size, device)
 
         # getting path to datasets
         input_path = None  # train dataset
         output_path = None  # generated dataset
         if model_id == 0:
-            input_path = dset_dir + 'original_dataset-ubyte.gz'
-            output_path = dset_dir + 'dataset_0-ubyte.gz'
+            input_path = dset_dir + '/original_dataset-ubyte.gz'
+            output_path = dset_dir + '/dataset_0-ubyte.gz'
         elif model_id == num_models-1:
-            input_path = dset_dir + 'dataset_' + str(model_id-1) + '-ubyte.gz'
-            output_path = dset_dir + 'final_dataset-ubyte.gz'
+            input_path = dset_dir + '/dataset_' + str(model_id-1) + '-ubyte.gz'
+            output_path = dset_dir + '/final_dataset-ubyte.gz'
         else:
-            input_path = dset_dir + 'dataset_' + str(model_id-1) + '-ubyte.gz'
-            output_path = dset_dir + 'dataset_' + str(model_id) + '-ubyte.gz'
+            input_path = dset_dir + '/dataset_' + str(model_id-1) + '-ubyte.gz'
+            output_path = dset_dir + '/dataset_' + str(model_id) + '-ubyte.gz'
 
         # measuring iteration's initial time
         start_time = time.perf_counter()
 
         # training the autoencoder
-        base_model = train_AutoEncoder(base_model, device, input_path, y_size, x_size)
+        base_model = train_VAE(base_model, device, input_path, y_size, x_size)
 
         # generating new dataset and writing it to file
         generate_dset(base_model, device, output_path, dset_size)

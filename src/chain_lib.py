@@ -10,7 +10,6 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 from torch.nn.functional import mse_loss
 from torchvision import transforms
-from torchvision.utils import make_grid
 import matplotlib.pyplot as plt
 
 
@@ -62,8 +61,89 @@ class Points(Dataset):
         return image
 
 
-# variational autoencoder with fully connected NNs
-class FC_AutoEncoder(nn.Module):
+# variational autoencoder with two layers-fully connected NNs
+class VAE_FC1(nn.Module):
+
+    def __init__(self, y_size, x_size, latent_size, device=None):
+        super().__init__()
+
+        # getting the device
+        self.device = device
+
+        # computing size of grids
+        self.y_size = y_size
+        self.x_size = x_size
+        self.img_size = self.y_size * self.x_size
+
+        # computing number of nodes in the intermediate
+        # layer of encoder and decoder (chosen to be one
+        # fifth of the image size)
+        self.inter_size = int(self.img_size / 5)
+
+        # setting size of the latent space
+        self.latent_size = latent_size
+
+        # defining the encoder (we use a common encoder
+        # for means and log-variances)
+        self.encoder = nn.Sequential(
+                nn.Linear(self.img_size, self.inter_size),
+                nn.ReLU(),
+        )
+
+        # defining layers of 'specialization' for encoder
+        # (i.e. final layers to compute means and
+        # log-variances)
+        self.mu = nn.Linear(self.inter_size, self.latent_size)
+        self.log_var = nn.Linear(self.inter_size, self.latent_size)
+
+        # defining the decoder
+        self.decoder = nn.Sequential(
+                nn.Linear(self.latent_size, self.inter_size),
+                nn.ReLU(),
+                nn.Linear(self.inter_size, self.img_size),
+                nn.Sigmoid(),
+        )
+
+    def reparameterize(self, mu, log_var):
+        # computing standard deviation
+        std = th.exp(0.5 * log_var)
+        # generating random noise
+        eps = th.randn_like(std)
+
+        return mu + eps * std
+
+    def forward(self, x):
+        # flattening image
+        x_flat = x.detach().clone().view(-1, self.img_size)
+
+        # encoding input image
+        encoded = self.encoder(x_flat)
+
+        # extracting z from latent space
+        mu = self.mu(encoded)
+        log_var = self.log_var(encoded)
+        z = self.reparameterize(mu, log_var)
+
+        # deconding z
+        decoded = self.decoder(z)
+
+        return x_flat, encoded, decoded, mu, log_var
+
+    # function to extract a sample of images
+    # ('generative mode')
+    def get_samples(self, num_samples):
+
+        with th.no_grad():
+            # generating samples in latent space
+            z = th.randn(num_samples, self.latent_size).to(self.device)
+            # decoding samples
+            samples = self.decoder(z)
+
+        return samples
+
+
+# variational autoencoder with three layers-fully connected NNs
+class VAE_FC2(nn.Module):
 
     def __init__(self, y_size, x_size, latent_size, device=None):
         super().__init__()
@@ -78,8 +158,9 @@ class FC_AutoEncoder(nn.Module):
 
         # computing number of nodes in the intermediate
         # layers of encoder and decoder (chosen to be one
-        # fifth of the image size)
-        self.inter_size = int(self.img_size / 5)
+        # fourth and one twentieth of the image size)
+        self.inter_size1 = int(self.img_size / 4)
+        self.inter_size2 = int(self.img_size / 20)
 
         # setting size of the latent space
         self.latent_size = latent_size
@@ -87,24 +168,26 @@ class FC_AutoEncoder(nn.Module):
         # defining the encoder (we use a common encoder
         # for means and log-variances)
         self.encoder = nn.Sequential(
-            nn.Linear(self.img_size, self.inter_size),
-            nn.ReLU(),
-            nn.Linear(self.inter_size, self.latent_size),
-            nn.ReLU(),
+                nn.Linear(self.img_size, self.inter_size1),
+                nn.ReLU(),
+                nn.Linear(self.inter_size1, self.inter_size2),
+                nn.ReLU(),
         )
 
         # defining layers of 'specialization' for encoder
         # (i.e. final layers to compute means and
         # log-variances)
-        self.mu = nn.Linear(self.latent_size, self.latent_size)
-        self.log_var = nn.Linear(self.latent_size, self.latent_size)
+        self.mu = nn.Linear(self.inter_size2, self.latent_size)
+        self.log_var = nn.Linear(self.inter_size2, self.latent_size)
 
         # defining the decoder
         self.decoder = nn.Sequential(
-            nn.Linear(self.latent_size, self.inter_size),
-            nn.ReLU(),
-            nn.Linear(self.inter_size, self.img_size),
-            nn.Sigmoid(),
+                nn.Linear(self.latent_size, self.inter_size2),
+                nn.ReLU(),
+                nn.Linear(self.inter_size2, self.inter_size1),
+                nn.ReLU(),
+                nn.Linear(self.inter_size1, self.img_size),
+                nn.Sigmoid(),
         )
 
     def reparameterize(self, mu, log_var):
@@ -146,7 +229,7 @@ class FC_AutoEncoder(nn.Module):
 
 
 # variational autoencoder with convolutional NNs
-class Conv_AutoEncoder(nn.Module):
+class VAE_Conv(nn.Module):
 
     def __init__(self, y_size, x_size, latent_size, device=None):
         super().__init__()
@@ -169,11 +252,11 @@ class Conv_AutoEncoder(nn.Module):
 
         # defining the encoder
         self.encoder = nn.Sequential(
-            nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3),
-            nn.ReLU(),
-            nn.Flatten(start_dim=1),
-            nn.Linear((self.x_size-2) * (self.y_size-2) * 32, self.inter_size),
-            nn.ReLU(),
+                nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3),
+                nn.ReLU(),
+                nn.Flatten(start_dim=1),
+                nn.Linear((self.x_size-2) * (self.y_size-2) * 32, self.inter_size),
+                nn.ReLU(),
         )
 
         # defining layers of 'specialization' for encoder
@@ -184,13 +267,13 @@ class Conv_AutoEncoder(nn.Module):
 
         # defining the decoder
         self.decoder = nn.Sequential(
-            nn.Linear(self.latent_size, self.inter_size),
-            nn.ReLU(),
-            nn.Linear(self.inter_size, (self.x_size - 2) * (self.y_size - 2) * 32),
-            nn.ReLU(),
-            nn.Unflatten(dim=1, unflattened_size=(32, self.x_size - 2, self.y_size - 2)),
-            nn.ConvTranspose2d(in_channels=32, out_channels=1, kernel_size=3),
-            nn.Sigmoid(),
+                nn.Linear(self.latent_size, self.inter_size),
+                nn.ReLU(),
+                nn.Linear(self.inter_size, (self.x_size - 2) * (self.y_size - 2) * 32),
+                nn.ReLU(),
+                nn.Unflatten(dim=1, unflattened_size=(32, self.x_size - 2, self.y_size - 2)),
+                nn.ConvTranspose2d(in_channels=32, out_channels=1, kernel_size=3),
+                nn.Sigmoid(),
         )
 
     def reparameterize(self, mu, log_var):
@@ -248,7 +331,7 @@ class loss_function(nn.Module):
 # function to train a single autoencoder (an instantiated model
 # must be passed as input parameter and the trained model is
 # returned as output)
-def train_AutoEncoder(model, device, dset_path, y_size, x_size, learning_rate=0.001, num_epochs=5):
+def train_VAE(model, device, dset_path, y_size, x_size, learning_rate=0.001, num_epochs=5):
 
     # defining hyperparameters
     criterion = loss_function()

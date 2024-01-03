@@ -47,9 +47,10 @@ The repo is structured in the following way:
 All data gathered for this project were obtained with the following general 
 procedure:
 
-1. Create an empty directory to store initial, final and intermediate datasets
-2. Create an empty directory to store distributions related to initial, final 
-and intermediate datasets
+1. Create an empty directory inside `data/` to store initial, final and 
+intermediate datasets
+2. Create an empty directory inside `data/` to store distributions related to 
+initial, final and intermediate datasets
 3. Inside the directory created at point 1., create an initial dataset called 
 `original_dataset-ubyte.gz` using the `gen_dataset.py` script (set the desired 
 parameters by using the script's command line arguments)
