@@ -15,10 +15,8 @@ The first autoencoder of the chain will be trained on an "ad hoc" dataset made
 of grids in which pixels are turned on according to a given distribution.
 
 The outcome will be interesting (**in my opinion**) because this is just a very 
-simple and particular example of a much broader topic that I find extremely
-interesting: AI models trained on AI-generated data.
-I personally think that this is a fundamental issue we will have to face sooner 
-or later.
+simple and particular example of a much broader topic, that is AI models
+trained on AI-generated data.
 
 Whether the project's aim makes sense or not is highly debatable (I still have
 to figure it out).
@@ -38,8 +36,7 @@ The repo is structured in the following way:
   length) starting from a target dataset
   - `comp_distribution.py`: script that can be used to compute the distribution 
   of the turned on pixels in some dataset
-
-...
+- `data/`: directory containing data gathered with different parameters
 
 
 ## General pipeline
