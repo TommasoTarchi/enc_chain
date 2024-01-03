@@ -4,29 +4,29 @@
 # intermediate data
 data/data_FC1/*
 !data/data_FC1/run.sh
-!data/data_FC1/original_dset.gz
-!data/data_FC1/final_dset.gz
+!data/data_FC1/original_dset-ubyte.gz
+!data/data_FC1/final_dset-ubyte.gz
 !data/data_FC1/original_dist.png
 !data/data_FC1/final_dist.png
 
 data/data_FC2/*
 !data/data_FC2/run.sh
-!data/data_FC2/original_dset.gz
-!data/data_FC2/final_dset.gz
+!data/data_FC2/original_dset-ubyte.gz
+!data/data_FC2/final_dset-ubyte.gz
 !data/data_FC2/original_dist.png
 !data/data_FC2/final_dist.png
 
 data/data_Conv/*
 !data/data_Conv/run.sh
-!data/data_Conv/original_dset.gz
-!data/data_Conv/final_dset.gz
+!data/data_Conv/original_dset-ubyte.gz
+!data/data_Conv/final_dset-ubyte.gz
 !data/data_Conv/original_dist.png
 !data/data_Conv/final_dist.png
 
 data/data_FC2_longchain/*
 !data/data_FC2_longchain/run.sh
-!data/data_FC2_longchain/original_dset.gz
-!data/data_FC2_longchain/final_dset.gz
+!data/data_FC2_longchain/original_dset-ubyte.gz
+!data/data_FC2_longchain/final_dset-ubyte.gz
 !data/data_FC2_longchain/original_dist.png
 !data/data_FC2_longchain/final_dist.png
 
