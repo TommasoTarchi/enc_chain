@@ -45,17 +45,16 @@ All data gathered for this project were obtained with the following general
 procedure:
 
 1. Create an empty directory inside `data/` to store initial, final and 
-intermediate datasets
-2. Create an empty directory inside `data/` to store distributions related to 
-initial, final and intermediate datasets
-3. Inside the directory created at point 1., create an initial dataset called 
-`original_dset-ubyte.gz` using the `gen_dset.py` script (set the desired 
+intermediate datasets, with related distributions
+2. Inside the directory created at point 1., create an initial dataset called 
+`original_dset-ubyte.gz` using the `gen_dataset.py` script (set the desired 
 parameters by using the script's command line arguments)
-4. Run the chain using `make_chain.py`, setting the desired command line arguments
+3. Run the chain using `make_chain.py`, setting the desired command line arguments
 (**notice** that the arguments passed to this script must be coherent to the ones
 used to generate the dataset at step 3., and that the path to the directory to 
 store datasets must be passed from command line as well)
-5. For all datasets produced by the chain (saved in the directory created at point
+4. For all datasets produced by the chain (saved in the directory created at point
 1.), compute the related distribution of turned on pixels using 
 `comp_distribution.py`, remembering to pass as command line arguments both the
-path to dataset and the path to where the distribution's plot has to be stored.
+path to dataset and the path to where you want the related distribution's plot to
+be stored.
