@@ -1,11 +1,14 @@
-# this script can be used to train a chain of autoencoders
+# this script can be used to train a chain of autoencoders,
+# starting from a dataset called 'original_dataset-ubyte.gz'
+# located in some directory passed as argument
 #
 # WARNING: be careful passing command line arguments - grids'
 # height and width and dataset size must be coherent with the
-# dataset passed
+# features of the dataset used
 
 
 import argparse
+import time
 from chain_lib import positive_int
 from chain_lib import FC_AutoEncoder
 from chain_lib import Conv_AutoEncoder
@@ -18,9 +21,9 @@ import torch as th
 num_models_dflt = 20  # number of autoencoders in the chain
 model_type_dflt = 'FC'  # autoencoder type
 dset_dir_dflt = '../data/'  # directory containing data
-y_size_dflt = 50  # height of grids
-x_size_dflt = 50  # width of grids
-dset_size_dflt = 30000  # dataset size
+y_size_dflt = 30  # height of grids
+x_size_dflt = 30  # width of grids
+dset_size_dflt = 20000  # dataset size
 latent_size_dflt = 8  # size of latent space
 
 
@@ -52,6 +55,8 @@ if __name__ == "__main__":
     # training the model
     for model_id in range(num_models):
 
+        print(f"\ntraining model number {model_id} of the chain...")
+
         # instatiating the base model (autoencoder)
         base_model = None
         if model_type == 'FC':
@@ -72,8 +77,16 @@ if __name__ == "__main__":
             input_path = dset_dir + 'dataset_' + str(model_id-1) + '-ubyte.gz'
             output_path = dset_dir + 'dataset_' + str(model_id) + '-ubyte.gz'
 
+        # measuring iteration's initial time
+        start_time = time.perf_counter()
+
         # training the autoencoder
         base_model = train_AutoEncoder(base_model, device, input_path, y_size, x_size)
 
         # generating new dataset and writing it to file
         generate_dset(base_model, device, output_path, dset_size)
+
+        # measuring iteration's elapsed time
+        elapsed_time = time.perf_counter() - start_time
+
+        print(f"model trained and dataset generated\n\ttotal iteration time: {elapsed_time} seconds")

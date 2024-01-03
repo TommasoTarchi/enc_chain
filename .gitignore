@@ -13,3 +13,6 @@ distributions/*
 
 # notes
 notes.txt
+
+# notebooks for visualization
+*.ipynb

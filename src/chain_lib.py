@@ -10,14 +10,8 @@ from torch.utils.data import DataLoader
 import torch.nn as nn
 from torch.nn.functional import mse_loss
 from torchvision import transforms
+from torchvision.utils import make_grid
 import matplotlib.pyplot as plt
-
-
-# setting default parameters
-dset_size_dflt = 30000  # dataset size
-y_size_dflt = 50  # height of the grids
-x_size_dflt = 50  # width of the grids
-latent_size_dflt = 8  # size of the latent space
 
 
 # needed for input parameters of generate_dataset.py
@@ -46,7 +40,7 @@ def imshow(img, file_path=None):
 # custom dataset of grids
 class Points(Dataset):
 
-    def __init__(self, dset_path, y_size=y_size_dflt, x_size=x_size_dflt, transform=None):
+    def __init__(self, dset_path, y_size, x_size, transform=None):
         # loading images
         with gzip.open(dset_path, 'rb') as f:
             self.images = np.frombuffer(f.read(), dtype=np.uint8)
@@ -71,7 +65,7 @@ class Points(Dataset):
 # variational autoencoder with fully connected NNs
 class FC_AutoEncoder(nn.Module):
 
-    def __init__(self, y_size=y_size_dflt, x_size=x_size_dflt, latent_size=latent_size_dflt, device=None):
+    def __init__(self, y_size, x_size, latent_size, device=None):
         super().__init__()
 
         # getting the device
@@ -110,7 +104,7 @@ class FC_AutoEncoder(nn.Module):
             nn.Linear(self.latent_size, self.inter_size),
             nn.ReLU(),
             nn.Linear(self.inter_size, self.img_size),
-            nn.Softmax(dim=1),
+            nn.Sigmoid(),
         )
 
     def reparameterize(self, mu, log_var):
@@ -154,7 +148,7 @@ class FC_AutoEncoder(nn.Module):
 # variational autoencoder with convolutional NNs
 class Conv_AutoEncoder(nn.Module):
 
-    def __init__(self, y_size=y_size_dflt, x_size=x_size_dflt, latent_size=latent_size_dflt, device=None):
+    def __init__(self, y_size, x_size, latent_size, device=None):
         super().__init__()
 
         # getting the device
@@ -180,14 +174,13 @@ class Conv_AutoEncoder(nn.Module):
             nn.Flatten(start_dim=1),
             nn.Linear((self.x_size-2) * (self.y_size-2) * 32, self.inter_size),
             nn.ReLU(),
-            nn.Linear(self.inter_size, self.latent_size),
         )
 
         # defining layers of 'specialization' for encoder
         # (i.e. final layers to compute means and
         # log-variances)
-        self.mu = nn.Linear(self.latent_size, self.latent_size)
-        self.log_var = nn.Linear(self.latent_size, self.latent_size)
+        self.mu = nn.Linear(self.inter_size, self.latent_size)
+        self.log_var = nn.Linear(self.inter_size, self.latent_size)
 
         # defining the decoder
         self.decoder = nn.Sequential(
@@ -197,7 +190,7 @@ class Conv_AutoEncoder(nn.Module):
             nn.ReLU(),
             nn.Unflatten(dim=1, unflattened_size=(32, self.x_size - 2, self.y_size - 2)),
             nn.ConvTranspose2d(in_channels=32, out_channels=1, kernel_size=3),
-            nn.Softmax(dim=1)
+            nn.Sigmoid(),
         )
 
     def reparameterize(self, mu, log_var):
@@ -229,6 +222,7 @@ class Conv_AutoEncoder(nn.Module):
         with th.no_grad():
             # generating samples in latent space
             z = th.randn(num_samples, self.latent_size).to(self.device)
+
             # decoding samples
             samples = self.decoder(z)
 
@@ -242,8 +236,8 @@ class loss_function(nn.Module):
         super().__init__()
 
     def forward(self, recon_x, x, mu, log_var):
-        # recustruction error (MSE)
-        MSE = mse_loss(recon_x, x)
+        # recustruction error
+        MSE = mse_loss(recon_x, x, reduction='sum')
 
         # regularization term (Kullback-Leibler divergence)
         KLD = -0.5 * th.sum(1 + log_var - mu.pow(2) - log_var.exp())
@@ -254,7 +248,7 @@ class loss_function(nn.Module):
 # function to train a single autoencoder (an instantiated model
 # must be passed as input parameter and the trained model is
 # returned as output)
-def train_AutoEncoder(model, device, dset_path, y_size=y_size_dflt, x_size=x_size_dflt, learning_rate=0.001, num_epochs=10):
+def train_AutoEncoder(model, device, dset_path, y_size, x_size, learning_rate=0.001, num_epochs=5):
 
     # defining hyperparameters
     criterion = loss_function()
@@ -273,14 +267,22 @@ def train_AutoEncoder(model, device, dset_path, y_size=y_size_dflt, x_size=x_siz
     model.train()
 
     # training loop
-    for _ in range(num_epochs):
+    for epoch in range(num_epochs):
 
-        for _, images in enumerate(train_loader):
+        epoch_loss = 0.0  # epoch running loss
+
+        for batch_number, images in enumerate(train_loader):
 
             images = images.to(device)
 
-            # computing recostructed images and latent
+            # computing recostructed images and latent variables
             target, _, decoded, mu, log_var = model(images)
+
+            ##############################################################
+            # if batch_number == 0:
+            #     imshow(make_grid(target[0]), 'target_'+str(epoch)+'.png')
+            #     imshow(make_grid(decoded[0]), 'recon_'+str(epoch)+'.png')
+            ##############################################################
 
             # computing loss
             loss = criterion(decoded, target, mu, log_var)
@@ -290,6 +292,13 @@ def train_AutoEncoder(model, device, dset_path, y_size=y_size_dflt, x_size=x_siz
             loss.backward()
             optimizer.step()
 
+            # updating running loss
+            epoch_loss += loss.item() * images.size(0)
+
+        # printing the epoch loss
+        epoch_loss /= len(train_loader.dataset)
+        print(f"\tloss at epoch {epoch}: {epoch_loss}")
+
     # evaluation mode
     model.eval()
 
@@ -297,17 +306,27 @@ def train_AutoEncoder(model, device, dset_path, y_size=y_size_dflt, x_size=x_siz
 
 
 # function to generate dataset using autoencoder and write it to file
-def generate_dset(model, device, dset_path, dset_size=dset_size_dflt):
+def generate_dset(model, device, dset_path, dset_size):
 
     # selecting device
     model = model.to(device)
 
+    # setting evaluation mode
+    model = model.eval()
+
     # generating syntetic dataset
     dset = model.get_samples(dset_size)
-    dset = dset.view(-1, 1, 50, 50)
+
+    ##############################################################
+    # imshow(make_grid(dset[0]), 'generated_0.png')
+    # imshow(make_grid(dset[1]), 'generated_1.png')
+    # imshow(make_grid(dset[2]), 'generated_2.png')
+    ##############################################################
 
     # writing dataset to file
-    dset_np = dset.detach().clone().numpy()  # converting to numpy array
+    dset *= 255  # rescaling for grey scale
+    dset_rounded = th.round(dset).detach().clone().cpu()  # creating cpu rounded copy
+    dset_np = dset_rounded.numpy().astype(np.ubyte)  # converting to numpy array
     dset_byte = dset_np.tobytes()  # converting to byte array
     with gzip.open(dset_path, 'wb') as f:
         f.write(dset_byte)

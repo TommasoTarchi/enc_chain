@@ -1,4 +1,8 @@
+# Enc\_Chain
+
+
 ***Work in progress...***
+
 
 ## What is this all about
 
@@ -15,3 +19,45 @@ humans have is the same that is recognized by the machine.
 
 Whether the project's aim makes sense or not is highly debatable (I still have
 to figure it out).
+
+
+## What you will find in this repository
+
+The repo is structured in the following way:
+
+- This README file
+- `src/`: directory containing all source code used for the project; contains:
+  - `chain_lib.py`: library containing all classes and functions used in the 
+  scripts
+  - `gen_dataset.py`: script that can be used to generate a syntetic dataset 
+  with pixels turned on according to some (chosen) distribution
+  - `make_chain.py`: script that can be used to run a chain of VAEs (of variable
+  length) starting from a target dataset
+  - `comp_distribution.py`: script that can be used to compute the distribution 
+  of the turned on pixels in some dataset
+...
+
+
+## General pipeline
+
+In general, to produce a chain of VAEs with resulting datasets and related pixel 
+distributions, using a given set of parameters (i.e. grids' size, dataset size, 
+distribution of the pixels in grids of the initial dataset), a simple sequence 
+of steps can be followed.
+
+All simulations in this project were obtained with the following procedure:
+
+1. Create an empty directory to store initial, final and intermediate datasets
+2. Create an empty directory to store distributions related to initial, final 
+and intermediate datasets
+3. Inside the directory created at point 1., create an initial dataset called 
+`original_dataset-ubyte.gz` using the `gen_dataset.py` script; set the desired 
+parameters by setting the script's command line arguments
+4. Run the chain using `make_chain.py`, setting the desired command line arguments;
+**notice** that the arguments passed to this script must be coherent to the ones
+used to generate the dataset at step 3., and that the path to the directory to 
+store datasets must passed from command line as well
+5. For all datasets produced by the chain (saved in the directory created at point
+1.), compute the related distribution of turned on pixels using 
+`comp_distribution.py`, remembering to pass both the directories created at point
+1. and 2.

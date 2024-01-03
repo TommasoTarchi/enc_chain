@@ -10,9 +10,9 @@ import numpy as np
 
 # default parameters
 dset_path_dflt = '../data/original_dataset-ubyte.gz'  # path to save data
-dset_size_dflt = 30000  # size of the dataset
-y_size_dflt = 50  # height of the grids
-x_size_dflt = 50  # width of the grids
+dset_size_dflt = 20000  # size of the dataset
+y_size_dflt = 30  # height of the grids
+x_size_dflt = 30  # width of the grids
 y_dist_dflt = 'binomial'  # distribution of the y coordinates
 x_dist_dflt = 'binomial'  # distribution of the x coordinates
 
