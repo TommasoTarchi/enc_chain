@@ -56,9 +56,42 @@ if __name__ == "__main__":
     elif x_dist == 'uniform':
         x_coord = np.random.randint(0, x_size, dset_size)
 
-    # randomly turning on one pixel
+    # randomly turning on one pixel and 7 neighbour ones
     for i in range(grids.shape[0]):
         grids[i][y_coord[i]][x_coord[i]] = 255
+
+        # pixels on the top row
+        if y_coord[i] == 0:
+            if x_coord[i] != 0:
+                grids[i][y_coord[i]][x_coord[i]-1] = 255
+                grids[i][y_coord[i]+1][x_coord[i]-1] = 255
+            if x_coord[i] != x_size-1:
+                grids[i][y_coord[i]][x_coord[i]+1] = 255
+                grids[i][y_coord[i]+1][x_coord[i]+1] = 255
+            grids[i][y_coord[i]+1][x_coord[i]] = 255
+
+        # pixels on the bottom row
+        elif y_coord[i] == y_size-1:
+            if x_coord[i] != 0:
+                grids[i][y_coord[i]-1][x_coord[i]-1] = 255
+                grids[i][y_coord[i]][x_coord[i]-1] = 255
+            if x_coord[i] != x_size-1:
+                grids[i][y_coord[i]-1][x_coord[i]+1] = 255
+                grids[i][y_coord[i]][x_coord[i]+1] = 255
+            grids[i][y_coord[i]-1][x_coord[i]] = 255
+
+        # pixels on middle rows
+        else:
+            if x_coord[i] != 0:
+                grids[i][y_coord[i]-1][x_coord[i]-1] = 255
+                grids[i][y_coord[i]][x_coord[i]-1] = 255
+                grids[i][y_coord[i]+1][x_coord[i]-1] = 255
+            if x_coord[i] != x_size-1:
+                grids[i][y_coord[i]-1][x_coord[i]+1] = 255
+                grids[i][y_coord[i]][x_coord[i]+1] = 255
+                grids[i][y_coord[i]+1][x_coord[i]+1] = 255
+            grids[i][y_coord[i]-1][x_coord[i]] = 255
+            grids[i][y_coord[i]+1][x_coord[i]] = 255
 
     # loading dataset to file
     grids_byte = grids.copy().tobytes()

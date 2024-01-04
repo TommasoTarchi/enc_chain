@@ -1,0 +1,19 @@
+- provare ad incrementare la complessità del modello per vedere se i risultati migliorano
+
+- aggiungere coerenza delle misure
+
+- comparare la loss function e le distribuzioni prodotte dai diversi tipi di architettura e vedere se la distribuzione al primo anello della catena è ugualmente buona, mentre cambia man mano che avanziamo nella catena; provare a spiegare perché è così (in particolare il comportamento per FC1 negli ultimi anelli dell catena)
+
+- provare a spiegare lo strano comportamento della loss function che va a zero man mano che si avanza nell'anello; eventualmente misurare distanza tra dataset e plottarla (notare che le ultime distribuzioni sono tutte identiche); cercare di spiegare il comportamento (di fatto è un bias che riduce la diversità dei dataset, ma comunque cattura l'"essenza" del dataset, cioè la distribuzione)
+
+- in generale plottare comportamento della loss function
+
+- provare anche con distribuzione uniforme
+
+- sottolineare che con un solo pixel acceso le immagini prodotte erano molto tenui (e spiegare perché: probabilmente dipendeva dal calcolo del MSE durante il training)
+
+- per risolvere il problema sul dataset finale provare a fare una sorta di "image cleaning", in cui si spengono tutti i pixel con un valore di grigio molto basso per vedere se si riesce a eliminare il rumore che porta alle immagini sbagliate
+
+- eventualmente dividere il progetto in due parti: nella seconda cercare modi per risolvere il problema
+
+- eventualmente trovare parametri (magari ridurre complessità architettura o diminuire dimensioni del dataset) per cui il dataset finale è sminchiato e provare a trovare modi per ridurre la sminchiatura (ad esempio "image cleaning", come detto prima)

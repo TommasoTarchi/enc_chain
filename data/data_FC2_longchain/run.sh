@@ -9,7 +9,7 @@ cd ../../src/ ||
     exit
 
 # length of the autoencoders chain
-chain_length=50
+chain_length=60
 
 # data folders
 data_dir="../data/data_FC2_longchain"
@@ -25,7 +25,7 @@ dset_path="${data_dir}/original_dset-ubyte.gz"
 dist_path="${data_dir}/original_dist.png"
 python3 comp_distribution.py --dset_path "$dset_path" --plot_path "$dist_path"
 
-for i in $(seq 0 18); do
+for i in $(seq 0 $((chain_length - 2))); do
     dset_path="${data_dir}/dset_${i}-ubyte.gz"
     dist_path="${data_dir}/dist_${i}.png"
     python3 comp_distribution.py --dset_path "$dset_path" --plot_path "$dist_path"

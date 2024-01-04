@@ -29,9 +29,3 @@ data/data_FC2_longchain/*
 !data/data_FC2_longchain/final_dset-ubyte.gz
 !data/data_FC2_longchain/original_dist.png
 !data/data_FC2_longchain/final_dist.png
-
-# notes
-notes.txt
-
-# notebooks for data visualization
-*.ipynb
