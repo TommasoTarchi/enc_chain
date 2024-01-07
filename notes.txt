@@ -15,6 +15,6 @@
     2. provare a cambiare distribuzione verso cui viene forzato spazio latente
     3. provare a usare encoder e decoder con architettura diversa all'interno dello stesso anello (per rompere simmetria)
 
-- provare a diminuire il contributo del termine di regolarizzazione (o equivalentemente ad aumentare quello della KL divergence) nella loss function e vedere se va a zero più lentamente
+- provare a diminuire il contributo del termine di regolarizzazione (o equivalentemente ad aumentare quello del termine di ricostruzione) nella loss function e vedere se va a zero più lentamente
 
-- togliere dataset da github (inutili) e scriverlo nel README
+- aggiungere in ogni cartella di dati un README con la descrizione dei parametri usati

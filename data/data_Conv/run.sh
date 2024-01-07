@@ -2,6 +2,7 @@
 
 # cleaning current directory
 rm -rf *.gz
+rm -rf *.png
 rm -rf *.out
 
 # moving to source code directory

@@ -37,17 +37,18 @@ The repo is structured in the following way:
   length) starting from a target dataset
   - `comp_distribution.py`: script that can be used to compute the distribution 
   of the turned on pixels in some dataset
-  - `show_grids.ipynb`: notebook that can be used to show a certain number of
-  random images from a given dataset (used to check that the autoencoders are 
-  working as expected)
   - `plot_variability.py`: script that can be used to compute and plot the 
   variability of the sequence of datasets produced by the chain
   - `plot_difference.py`: script that can be used to compute and plot the 
   difference between train and generated datasets' distributions of all models of 
   the chain
+  - `show_grids.ipynb`: notebook that can be used to show a certain number of
+  random images from a given dataset (used to check that the autoencoders are 
+  working as expected)
 - `data/`: directory containing data gathered with different parameters and 
 `run.sh` scripts used to obtain them (zipped data are removed - only their 
-graphical representations are left)
+graphical representations are left); each subdirectory contains a `README.md`
+file with a description of the parameters used
 
 
 ## General pipeline

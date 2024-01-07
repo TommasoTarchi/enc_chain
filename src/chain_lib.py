@@ -13,7 +13,7 @@ from torchvision import transforms
 import matplotlib.pyplot as plt
 
 
-# needed for input parameters of generate_dataset.py
+# needed for input parameters
 def positive_int(value):
 
     ivalue = int(value)
@@ -21,6 +21,16 @@ def positive_int(value):
     if ivalue <= 0:
         raise argparse.ArgumentTypeError(f"{value} is not a positive integer")
     return ivalue
+
+
+# needed for input parameters
+def positive_float(value):
+
+    fvalue = float(value)
+
+    if fvalue < 0:
+        raise argparse.ArgumentTypeError(f"{value} is not a positive float")
+    return fvalue
 
 
 # function to show or save grid images
@@ -403,8 +413,10 @@ class VAE_Asymm(nn.Module):
 # loss function for variational autoencoder
 class loss_function(nn.Module):
 
-    def __init__(self):
+    def __init__(self, lamb):
         super().__init__()
+
+        self.lamb = lamb  # constant of the regularization term
 
     def forward(self, recon_x, x, mu, log_var):
         # recustruction error
@@ -413,16 +425,16 @@ class loss_function(nn.Module):
         # regularization term (Kullback-Leibler divergence)
         KLD = -0.5 * th.sum(1 + log_var - mu.pow(2) - log_var.exp())
 
-        return MSE + KLD
+        return MSE + self.lamb * KLD
 
 
 # function to train a single autoencoder (an instantiated model
 # must be passed as input parameter and the trained model is
 # returned as output)
-def train_VAE(model, device, dset_path, y_size, x_size, learning_rate=0.001, num_epochs=5):
+def train_VAE(model, device, dset_path, y_size, x_size, regul_const=1, learning_rate=0.001, num_epochs=5):
 
     # defining hyperparameters
-    criterion = loss_function()
+    criterion = loss_function(regul_const)
     optimizer = th.optim.Adam(params=model.parameters(), lr=learning_rate)
     batch_size = 32
 

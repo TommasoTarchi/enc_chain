@@ -8,6 +8,7 @@
 
 
 from chain_lib import positive_int
+from chain_lib import positive_float
 from chain_lib import VAE_FC1
 from chain_lib import VAE_FC2
 from chain_lib import VAE_Conv
@@ -27,6 +28,7 @@ y_size_dflt = 20  # height of grids
 x_size_dflt = 20  # width of grids
 dset_size_dflt = 30000  # dataset size
 latent_size_dflt = 8  # size of latent space
+regul_const_dflt = 1.0  # regularization term's multiplicative constant
 
 
 if __name__ == "__main__":
@@ -40,6 +42,7 @@ if __name__ == "__main__":
     parser.add_argument('--x_size', type=positive_int, default=x_size_dflt)
     parser.add_argument('--dset_size', type=positive_int, default=dset_size_dflt)
     parser.add_argument('--latent_size', type=positive_int, default=latent_size_dflt)
+    parser.add_argument('--regul_const', type=positive_float, default=regul_const_dflt)
 
     args = parser.parse_args()
 
@@ -50,6 +53,7 @@ if __name__ == "__main__":
     x_size = args.x_size
     dset_size = args.dset_size
     latent_size = args.latent_size
+    regul_const = args.regul_const
 
     # getting device
     device = th.device(device="cuda" if th.cuda.is_available() else "cpu")
@@ -87,7 +91,7 @@ if __name__ == "__main__":
         start_time = time.perf_counter()
 
         # training the autoencoder
-        base_model = train_VAE(base_model, device, input_path, y_size, x_size)
+        base_model = train_VAE(base_model, device, input_path, y_size, x_size, regul_const=regul_const)
 
         # generating new dataset and writing it to file
         generate_dset(base_model, device, output_path, dset_size)
