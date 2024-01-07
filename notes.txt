@@ -1,19 +1,20 @@
-- provare ad incrementare la complessità del modello per vedere se i risultati migliorano
-
-- aggiungere coerenza delle misure
-
-- comparare la loss function e le distribuzioni prodotte dai diversi tipi di architettura e vedere se la distribuzione al primo anello della catena è ugualmente buona, mentre cambia man mano che avanziamo nella catena; provare a spiegare perché è così (in particolare il comportamento per FC1 negli ultimi anelli dell catena)
-
-- provare a spiegare lo strano comportamento della loss function che va a zero man mano che si avanza nell'anello; eventualmente misurare distanza tra dataset e plottarla (notare che le ultime distribuzioni sono tutte identiche); cercare di spiegare il comportamento (di fatto è un bias che riduce la diversità dei dataset, ma comunque cattura l'"essenza" del dataset, cioè la distribuzione)
-
-- in generale plottare comportamento della loss function
+- in generale plottare comportamento della loss function (forse non serve)
 
 - provare anche con distribuzione uniforme
 
 - sottolineare che con un solo pixel acceso le immagini prodotte erano molto tenui (e spiegare perché: probabilmente dipendeva dal calcolo del MSE durante il training)
 
-- per risolvere il problema sul dataset finale provare a fare una sorta di "image cleaning", in cui si spengono tutti i pixel con un valore di grigio molto basso per vedere se si riesce a eliminare il rumore che porta alle immagini sbagliate
+- sottolineare che differenza tra le distribuzioni dei dataset e la variabilità nei dataset non sono sufficienti a valutare la qualità dei modelli (idealmente la differenza dovrebbe essere sempre vicina a zero e la variabilità sempre diversa da zero e circa costante): bisogna anche vedere, plottandone qualcuna, se le immagini prodotte sono del tipo atteso
 
 - eventualmente dividere il progetto in due parti: nella seconda cercare modi per risolvere il problema
 
-- eventualmente trovare parametri (magari ridurre complessità architettura o diminuire dimensioni del dataset) per cui il dataset finale è sminchiato e provare a trovare modi per ridurre la sminchiatura (ad esempio "image cleaning", come detto prima)
+- il comportamento della loss function ci dice che siamo praticamente in regime di totale overfitting; provare a "inventare" un termine di regolarizzazione da aggiungere al modello per prevenire l'overfitting
+
+- il comportamento della loss function può forse essere spiegato dalla "simmetria" strutturale degli autoencoder; provare a:
+    1. ispezionare pesi dei decoder e encoder per vedere se sono uguali in anelli successivi
+    2. provare a cambiare distribuzione verso cui viene forzato spazio latente
+    3. provare a usare encoder e decoder con architettura diversa all'interno dello stesso anello (per rompere simmetria)
+
+- provare a diminuire il contributo del termine di regolarizzazione (o equivalentemente ad aumentare quello della KL divergence) nella loss function e vedere se va a zero più lentamente
+
+- togliere dataset da github (inutili) e scriverlo nel README

@@ -7,14 +7,15 @@
 # features of the dataset used
 
 
-import argparse
-import time
 from chain_lib import positive_int
 from chain_lib import VAE_FC1
 from chain_lib import VAE_FC2
 from chain_lib import VAE_Conv
+from chain_lib import VAE_Asymm
 from chain_lib import train_VAE
 from chain_lib import generate_dset
+import argparse
+import time
 import torch as th
 
 
@@ -33,7 +34,7 @@ if __name__ == "__main__":
     # getting parameters
     parser = argparse.ArgumentParser()
     parser.add_argument('--num_models', type=positive_int, default=num_models_dflt)
-    parser.add_argument('--model_type', type=str, choices=['FC1', 'FC2', 'Conv'], default=model_type_dflt)
+    parser.add_argument('--model_type', type=str, choices=['FC1', 'FC2', 'Conv', 'Asymm'], default=model_type_dflt)
     parser.add_argument('--dset_dir', type=str, default=dset_dir_dflt)
     parser.add_argument('--y_size', type=positive_int, default=y_size_dflt)
     parser.add_argument('--x_size', type=positive_int, default=x_size_dflt)
@@ -66,6 +67,8 @@ if __name__ == "__main__":
             base_model = VAE_FC2(y_size, x_size, latent_size, device)
         elif model_type == 'Conv':
             base_model = VAE_Conv(y_size, x_size, latent_size, device)
+        elif model_type == 'Asymm':
+            base_model = VAE_Asymm(y_size, x_size, latent_size, device)
 
         # getting path to datasets
         input_path = None  # train dataset

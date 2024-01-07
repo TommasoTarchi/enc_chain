@@ -312,6 +312,94 @@ class VAE_Conv(nn.Module):
         return samples
 
 
+# variational autoencoder with asymmetric structure
+# (convolutional NN as encoder and fully connected NN
+# as decoder)
+class VAE_Asymm(nn.Module):
+
+    def __init__(self, y_size, x_size, latent_size, device=None):
+        super().__init__()
+
+        # getting the device
+        self.device = device
+
+        # computing size of grids
+        self.y_size = y_size
+        self.x_size = x_size
+        self.img_size = self.y_size * self.x_size
+
+        # computing number of nodes in the intermediate
+        # layers of encoder and decoder
+        self.inter_size = int(self.img_size / 5)
+        self.inter_size1 = int(self.img_size / 4)
+        self.inter_size2 = int(self.img_size / 20)
+
+        # setting size of the latent space
+        self.latent_size = latent_size
+
+        # defining the encoder
+        self.encoder = nn.Sequential(
+                nn.Conv2d(in_channels=1, out_channels=32, kernel_size=3),
+                nn.ReLU(),
+                nn.Flatten(start_dim=1),
+                nn.Linear((self.x_size-2) * (self.y_size-2) * 32, self.inter_size),
+                nn.ReLU(),
+        )
+
+        # defining layers of 'specialization' for encoder
+        # (i.e. final layers to compute means and
+        # log-variances)
+        self.mu = nn.Linear(self.inter_size, self.latent_size)
+        self.log_var = nn.Linear(self.inter_size, self.latent_size)
+
+        # defining the decoder
+        self.decoder = nn.Sequential(
+                nn.Linear(self.latent_size, self.inter_size2),
+                nn.ReLU(),
+                nn.Linear(self.inter_size2, self.inter_size1),
+                nn.ReLU(),
+                nn.Linear(self.inter_size1, self.img_size),
+                nn.Sigmoid(),
+        )
+
+    def reparameterize(self, mu, log_var):
+        # computing standard deviation
+        std = th.exp(0.5 * log_var)
+        # generating random noise
+        eps = th.randn_like(std)
+
+        return mu + eps * std
+
+    def forward(self, x):
+        # encoding input image
+        encoded = self.encoder(x)
+
+        # extracting z from latent space
+        mu = self.mu(encoded)
+        log_var = self.log_var(encoded)
+        z = self.reparameterize(mu, log_var)
+
+        # deconding z
+        decoded = self.decoder(z)
+        decoded = decoded.reshape((-1, 1, self.y_size, self.x_size))
+
+        return x, encoded, decoded, mu, log_var
+
+    # function to extract a sample of images
+    # ('generative mode')
+    def get_samples(self, num_samples):
+
+        with th.no_grad():
+            # generating samples in latent space
+            z = th.randn(num_samples, self.latent_size).to(self.device)
+
+            # decoding samples
+            samples = self.decoder(z)
+            samples = samples.reshape((-1, 1, self.y_size, self.x_size))
+
+        return samples
+
+
 # loss function for variational autoencoder
 class loss_function(nn.Module):
 
