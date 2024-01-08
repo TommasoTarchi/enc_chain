@@ -241,8 +241,14 @@ class VAE_FC2(nn.Module):
 # variational autoencoder with convolutional NNs
 class VAE_Conv(nn.Module):
 
-    def __init__(self, y_size, x_size, latent_size, device=None):
+    def __init__(self, y_size, x_size, latent_size, std_increment, interpol=False, device=None):
         super().__init__()
+
+        # computing the standard deviation
+        self.std_modified = 1.0 + std_increment
+
+        # getting bool for inteprolation
+        self.interpol = interpol
 
         # getting the device
         self.device = device
@@ -314,7 +320,11 @@ class VAE_Conv(nn.Module):
 
         with th.no_grad():
             # generating samples in latent space
-            z = th.randn(num_samples, self.latent_size).to(self.device)
+            z = th.randn(num_samples, self.latent_size).to(self.device) * self.std_modified
+
+            # interpolating some of the points
+            if self.interpol:
+                pass  # AGGIUNGERE INTERPOLATION
 
             # decoding samples
             samples = self.decoder(z)

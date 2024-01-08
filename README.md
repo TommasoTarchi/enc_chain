@@ -49,6 +49,7 @@ The repo is structured in the following way:
 `run.sh` scripts used to obtain them (zipped data are removed - only their 
 graphical representations are left); each subdirectory contains a `README.md`
 file with a description of the parameters used
+- `Presentiation.pdf`: slide presentation of the project
 
 
 ## General pipeline

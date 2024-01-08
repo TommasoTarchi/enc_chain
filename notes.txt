@@ -14,3 +14,11 @@
     1. ispezionare pesi dei decoder e encoder per vedere se sono uguali in anelli successivi
     2. provare a cambiare distribuzione verso cui viene forzato spazio latente
     3. provare a usare encoder e decoder con architettura diversa all'interno dello stesso anello (per rompere simmetria)
+
+- far notare che la riduzione di variabilità è probabilmente una caratteristica intrinseca dei VAE, dato che neanche i modelli asimmetrici la conservano; infatti dipende dalla riduzione di dimensionalità
+
+- far notare che comunque i VAE sono in grado di catturare l'"essenza" di una distribuzione, anche se riducono la variabilità dei dataset
+
+- PROVARE a usare interpolazione (magari con sampling di lambda)
+
+- far notare che i VAE asimmetrici aggravano il problema

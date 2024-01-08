@@ -10,16 +10,15 @@ cd ../../src/ ||
     exit
 
 # data folders
-data_dir="../data/FC2_unif"
-base_model=FC2
-x_dist=uniform  # distribution for x coordinates in original dataset
-y_dist=uniform  # distribution for y coordinates in original dataset
+data_dir="../data/Conv_std"
+base_model=Conv
+std_increment=0.4  # increment on the stardard deviation in generative mode
 
 # generating initial dataset
-python3 gen_dataset.py --dset_path "${data_dir}/original_dset-ubyte.gz" --x_dist "$x_dist" --y_dist "$y_dist"
+python3 gen_dataset.py --dset_path "${data_dir}/original_dset-ubyte.gz"
 
 # running autoencoders chain
-python3 make_chain.py --dset_dir "$data_dir" --model_type "$base_model"  >  "${data_dir}/report.out"
+python3 make_chain.py --dset_dir "$data_dir" --model_type "$base_model" --std_increment "$std_increment"  >  "${data_dir}/report.out"
 
 # computing distributions from datasets
 dset_path="${data_dir}/original_dset-ubyte.gz"

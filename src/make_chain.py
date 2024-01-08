@@ -29,6 +29,8 @@ x_size_dflt = 20  # width of grids
 dset_size_dflt = 30000  # dataset size
 latent_size_dflt = 8  # size of latent space
 regul_const_dflt = 1.0  # regularization term's multiplicative constant
+std_increment_dflt = 0.0  # standard deviation increment in generative mode
+interpolation_dflt = False  # whether or not interpolation has to be performed
 
 
 if __name__ == "__main__":
@@ -43,6 +45,8 @@ if __name__ == "__main__":
     parser.add_argument('--dset_size', type=positive_int, default=dset_size_dflt)
     parser.add_argument('--latent_size', type=positive_int, default=latent_size_dflt)
     parser.add_argument('--regul_const', type=positive_float, default=regul_const_dflt)
+    parser.add_argument('--std_increment', type=float, default=std_increment_dflt)
+    parser.add_argument('--interpolation', type=bool, default=interpolation_dflt)
 
     args = parser.parse_args()
 
@@ -54,6 +58,8 @@ if __name__ == "__main__":
     dset_size = args.dset_size
     latent_size = args.latent_size
     regul_const = args.regul_const
+    std_increment = args.std_increment
+    interpolation = args.interpolation
 
     # getting device
     device = th.device(device="cuda" if th.cuda.is_available() else "cpu")
@@ -70,7 +76,7 @@ if __name__ == "__main__":
         elif model_type == 'FC2':
             base_model = VAE_FC2(y_size, x_size, latent_size, device)
         elif model_type == 'Conv':
-            base_model = VAE_Conv(y_size, x_size, latent_size, device)
+            base_model = VAE_Conv(y_size, x_size, latent_size, std_increment, interpolation, device)
         elif model_type == 'Asymm':
             base_model = VAE_Asymm(y_size, x_size, latent_size, device)
 
