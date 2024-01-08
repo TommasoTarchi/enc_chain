@@ -1,12 +1,12 @@
-- in generale plottare comportamento della loss function (forse non serve)
-
-- provare anche con distribuzione uniforme
+- in generale plottare (o magari solo descrivere) comportamento della loss function
 
 - sottolineare che con un solo pixel acceso le immagini prodotte erano molto tenui (e spiegare perché: probabilmente dipendeva dal calcolo del MSE durante il training)
 
 - sottolineare che differenza tra le distribuzioni dei dataset e la variabilità nei dataset non sono sufficienti a valutare la qualità dei modelli (idealmente la differenza dovrebbe essere sempre vicina a zero e la variabilità sempre diversa da zero e circa costante): bisogna anche vedere, plottandone qualcuna, se le immagini prodotte sono del tipo atteso
 
-- eventualmente dividere il progetto in due parti: nella seconda cercare modi per risolvere il problema
+- suggerire che la costruzione di una catena di questo tipo è un buon criterio per trovare la costante di regolaizzazione nella loss ottimale
+
+- sottolineare che, per quanto si possa migliorare la variabilità agendo sulla costante di regolarizzazione, comunque si ha perdita di variabilità (con azzeramento ad un certo punto)
 
 - il comportamento della loss function ci dice che siamo praticamente in regime di totale overfitting; provare a "inventare" un termine di regolarizzazione da aggiungere al modello per prevenire l'overfitting
 
@@ -14,7 +14,3 @@
     1. ispezionare pesi dei decoder e encoder per vedere se sono uguali in anelli successivi
     2. provare a cambiare distribuzione verso cui viene forzato spazio latente
     3. provare a usare encoder e decoder con architettura diversa all'interno dello stesso anello (per rompere simmetria)
-
-- provare a diminuire il contributo del termine di regolarizzazione (o equivalentemente ad aumentare quello del termine di ricostruzione) nella loss function e vedere se va a zero più lentamente
-
-- aggiungere in ogni cartella di dati un README con la descrizione dei parametri usati
