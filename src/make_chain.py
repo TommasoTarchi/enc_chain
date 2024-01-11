@@ -9,12 +9,14 @@
 
 from chain_lib import positive_int
 from chain_lib import positive_float
+from chain_lib import fraction_value
 from chain_lib import VAE_FC1
 from chain_lib import VAE_FC2
 from chain_lib import VAE_Conv
 from chain_lib import VAE_Asymm
 from chain_lib import train_VAE
 from chain_lib import generate_dset
+from chain_lib import denoise_dset
 import argparse
 import time
 import torch as th
@@ -24,13 +26,15 @@ import torch as th
 num_models_dflt = 20  # number of autoencoders in the chain
 model_type_dflt = 'Conv'  # autoencoder type
 dset_dir_dflt = '../data'  # directory containing data
-y_size_dflt = 20  # height of grids
-x_size_dflt = 20  # width of grids
-dset_size_dflt = 30000  # dataset size
+y_size_dflt = 24  # height of grids
+x_size_dflt = 24  # width of grids
+dset_size_dflt = 20000  # dataset size
 latent_size_dflt = 8  # size of latent space
+batch_size_dflt = 32  # size of batch in training
 regul_const_dflt = 1.0  # regularization term's multiplicative constant
+var_const_dflt = 0.0  # variability term's multiplicative constant
 std_increment_dflt = 0.0  # standard deviation increment in generative mode
-interpolation_dflt = False  # whether or not interpolation has to be performed
+denoise_thres_dflt = 0.0  # denoising threshold
 
 
 if __name__ == "__main__":
@@ -44,9 +48,11 @@ if __name__ == "__main__":
     parser.add_argument('--x_size', type=positive_int, default=x_size_dflt)
     parser.add_argument('--dset_size', type=positive_int, default=dset_size_dflt)
     parser.add_argument('--latent_size', type=positive_int, default=latent_size_dflt)
+    parser.add_argument('--batch_size', type=positive_int, default=batch_size_dflt)
     parser.add_argument('--regul_const', type=positive_float, default=regul_const_dflt)
+    parser.add_argument('--var_const', type=positive_float, default=var_const_dflt)
     parser.add_argument('--std_increment', type=float, default=std_increment_dflt)
-    parser.add_argument('--interpolation', type=bool, default=interpolation_dflt)
+    parser.add_argument('--denoise_thres', type=fraction_value, default=denoise_thres_dflt)
 
     args = parser.parse_args()
 
@@ -57,9 +63,11 @@ if __name__ == "__main__":
     x_size = args.x_size
     dset_size = args.dset_size
     latent_size = args.latent_size
+    batch_size = args.batch_size
     regul_const = args.regul_const
+    var_const = args.var_const
     std_increment = args.std_increment
-    interpolation = args.interpolation
+    denoise_thres = args.denoise_thres
 
     # getting device
     device = th.device(device="cuda" if th.cuda.is_available() else "cpu")
@@ -74,9 +82,9 @@ if __name__ == "__main__":
         if model_type == 'FC1':
             base_model = VAE_FC1(y_size, x_size, latent_size, device)
         elif model_type == 'FC2':
-            base_model = VAE_FC2(y_size, x_size, latent_size, device)
+            base_model = VAE_FC2(y_size, x_size, latent_size, std_increment, device)
         elif model_type == 'Conv':
-            base_model = VAE_Conv(y_size, x_size, latent_size, std_increment, interpolation, device)
+            base_model = VAE_Conv(y_size, x_size, latent_size, std_increment, device)
         elif model_type == 'Asymm':
             base_model = VAE_Asymm(y_size, x_size, latent_size, device)
 
@@ -97,7 +105,7 @@ if __name__ == "__main__":
         start_time = time.perf_counter()
 
         # training the autoencoder
-        base_model = train_VAE(base_model, device, input_path, y_size, x_size, regul_const=regul_const)
+        base_model = train_VAE(base_model, device, input_path, y_size, x_size, regul_const=regul_const, var_const=var_const, batch_size=batch_size)
 
         # generating new dataset and writing it to file
         generate_dset(base_model, device, output_path, dset_size)
@@ -106,3 +114,7 @@ if __name__ == "__main__":
         elapsed_time = time.perf_counter() - start_time
 
         print(f"model trained and dataset generated\n\ttotal iteration time: {elapsed_time} seconds")
+
+        # denoising output dataset (optional)
+        if denoise_thres:
+            denoise_dset(output_path, dset_size, y_size, x_size, denoise_thres)

@@ -6,3 +6,6 @@ data/**/*.gz
 
 # bash script's outputs
 data/**/report.out
+
+# script to run all simulations
+data/run_all.sh

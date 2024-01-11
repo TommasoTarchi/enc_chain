@@ -19,9 +19,9 @@ import matplotlib.pyplot as plt
 # default parameters
 num_models_dflt = 20  # number of autoencoders in the chain
 dset_dir_dflt = '../data'  # directory containing data
-y_size_dflt = 20  # height of grids
-x_size_dflt = 20  # width of grids
-dset_size_dflt = 30000  # dataset size
+y_size_dflt = 24  # height of grids
+x_size_dflt = 24  # width of grids
+dset_size_dflt = 20000  # dataset size
 
 
 if __name__ == "__main__":
@@ -87,5 +87,6 @@ if __name__ == "__main__":
     plt.xticks(model_ids)
     plt.xlabel('dataset')
     plt.ylabel('variability')
+    plt.ylim(0, 5)
     plt.legend()
     plt.savefig(dset_dir + '/variability.png')

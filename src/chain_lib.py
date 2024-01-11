@@ -33,6 +33,16 @@ def positive_float(value):
     return fvalue
 
 
+# needed for input parameters
+def fraction_value(value):
+
+    fvalue = float(value)
+
+    if fvalue < 0 or fvalue > 1:
+        raise argparse.ArgumentTypeError(f"{value} is not a fraction")
+    return fvalue
+
+
 # function to show or save grid images
 def imshow(img, file_path=None):
 
@@ -155,8 +165,14 @@ class VAE_FC1(nn.Module):
 # variational autoencoder with three layers-fully connected NNs
 class VAE_FC2(nn.Module):
 
-    def __init__(self, y_size, x_size, latent_size, device=None):
+    def __init__(self, y_size, x_size, latent_size, std_increment, device=None):
         super().__init__()
+
+        # computing the standard deviation
+        self.std_modified = 1.0 + std_increment
+
+        # getting the device
+        self.device = device
 
         # getting the device
         self.device = device
@@ -231,7 +247,8 @@ class VAE_FC2(nn.Module):
 
         with th.no_grad():
             # generating samples in latent space
-            z = th.randn(num_samples, self.latent_size).to(self.device)
+            z = th.randn(num_samples, self.latent_size).to(self.device) * self.std_modified
+
             # decoding samples
             samples = self.decoder(z)
 
@@ -241,14 +258,11 @@ class VAE_FC2(nn.Module):
 # variational autoencoder with convolutional NNs
 class VAE_Conv(nn.Module):
 
-    def __init__(self, y_size, x_size, latent_size, std_increment, interpol=False, device=None):
+    def __init__(self, y_size, x_size, latent_size, std_increment, device=None):
         super().__init__()
 
         # computing the standard deviation
         self.std_modified = 1.0 + std_increment
-
-        # getting bool for inteprolation
-        self.interpol = interpol
 
         # getting the device
         self.device = device
@@ -321,10 +335,6 @@ class VAE_Conv(nn.Module):
         with th.no_grad():
             # generating samples in latent space
             z = th.randn(num_samples, self.latent_size).to(self.device) * self.std_modified
-
-            # interpolating some of the points
-            if self.interpol:
-                pass  # AGGIUNGERE INTERPOLATION
 
             # decoding samples
             samples = self.decoder(z)
@@ -423,10 +433,25 @@ class VAE_Asymm(nn.Module):
 # loss function for variational autoencoder
 class loss_function(nn.Module):
 
-    def __init__(self, lamb):
+    def __init__(self, lamb, kappa, y_size, x_size):
         super().__init__()
 
-        self.lamb = lamb  # constant of the regularization term
+        self.lamb = lamb  # constant of the regularization term (KLD)
+        self.kappa = kappa  # constant of the variability term
+
+        # getting shape of images
+        self.y_size = y_size
+        self.x_size = x_size
+
+    # function to compute (consecutive pairs) variability in a batch
+    def comp_VAR(self, x):
+        num_features = self.x_size * self.y_size
+        x_flat = x.view(-1, num_features)
+        num_samples = x_flat.shape[0]
+        x_pairs = x_flat.view(num_samples // 2, 2, num_features)
+        VAR = mse_loss(x_pairs[:, 0, :], x_pairs[:, 1, :], reduction='sum') / num_samples
+
+        return VAR
 
     def forward(self, recon_x, x, mu, log_var):
         # recustruction error
@@ -435,18 +460,23 @@ class loss_function(nn.Module):
         # regularization term (Kullback-Leibler divergence)
         KLD = -0.5 * th.sum(1 + log_var - mu.pow(2) - log_var.exp())
 
-        return MSE + self.lamb * KLD
+        # variability term (only computed if asked, because very
+        # inefficient)
+        VAR = 0.0
+        if self.kappa != 0:
+            VAR += th.abs(self.comp_VAR(x) - self.comp_VAR(recon_x))
+
+        return MSE + self.lamb * KLD + self.kappa * VAR
 
 
 # function to train a single autoencoder (an instantiated model
 # must be passed as input parameter and the trained model is
 # returned as output)
-def train_VAE(model, device, dset_path, y_size, x_size, regul_const=1, learning_rate=0.001, num_epochs=5):
+def train_VAE(model, device, dset_path, y_size, x_size, regul_const=1, var_const=1, batch_size=32, learning_rate=0.001, num_epochs=5):
 
     # defining hyperparameters
-    criterion = loss_function(regul_const)
+    criterion = loss_function(regul_const, var_const, y_size, x_size)
     optimizer = th.optim.Adam(params=model.parameters(), lr=learning_rate)
-    batch_size = 32
 
     # selecting device
     model = model.to(device)
@@ -464,18 +494,12 @@ def train_VAE(model, device, dset_path, y_size, x_size, regul_const=1, learning_
 
         epoch_loss = 0.0  # epoch running loss
 
-        for batch_number, images in enumerate(train_loader):
+        for _, images in enumerate(train_loader):
 
             images = images.to(device)
 
             # computing recostructed images and latent variables
             target, _, decoded, mu, log_var = model(images)
-
-            ##############################################################
-            # if batch_number == 0:
-            #     imshow(make_grid(target[0]), 'target_'+str(epoch)+'.png')
-            #     imshow(make_grid(decoded[0]), 'recon_'+str(epoch)+'.png')
-            ##############################################################
 
             # computing loss
             loss = criterion(decoded, target, mu, log_var)
@@ -510,12 +534,6 @@ def generate_dset(model, device, dset_path, dset_size):
     # generating syntetic dataset
     dset = model.get_samples(dset_size)
 
-    ##############################################################
-    # imshow(make_grid(dset[0]), 'generated_0.png')
-    # imshow(make_grid(dset[1]), 'generated_1.png')
-    # imshow(make_grid(dset[2]), 'generated_2.png')
-    ##############################################################
-
     # writing dataset to file
     dset *= 255  # rescaling for grey scale
     dset_rounded = th.round(dset).detach().clone().cpu()  # creating cpu rounded copy
@@ -523,3 +541,31 @@ def generate_dset(model, device, dset_path, dset_size):
     dset_byte = dset_np.tobytes()  # converting to byte array
     with gzip.open(dset_path, 'wb') as f:
         f.write(dset_byte)
+
+
+# function to denoise data (threshold is the fraction of
+# the maximum grey value below which the pixel is turned off)
+def denoise_dset(dset_path, dset_size, y_size, x_size, threshold=0.1):
+
+    # loading dataset
+    data_transforms = transforms.ToTensor()
+    dset = Points(dset_path, y_size, x_size, data_transforms)
+    dset_loader = DataLoader(dataset=dset, batch_size=dset_size)
+
+    dataiter = dset_loader.__iter__()
+    grids = dataiter.__next__()
+
+    # computing threshold
+    threshold *= th.max(grids)
+
+    # denoising data
+    grids[grids < threshold] = 0
+
+    # writing denoised dataset to file (the old
+    # dataset is overwritten)
+    dset_dns = grids * 255  # rescaling for grey scale
+    dset_dns_rounded = th.round(dset_dns).detach().clone().cpu()  # creating cpu rounded copy
+    dset_dns_np = dset_dns_rounded.numpy().astype(np.ubyte)  # converting to numpy array
+    dset_dns_byte = dset_dns_np.tobytes()  # converting to byte array
+    with gzip.open(dset_path, 'wb') as f:
+        f.write(dset_dns_byte)

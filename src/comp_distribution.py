@@ -14,9 +14,9 @@ import argparse
 
 # default parameters
 dset_path_dflt = '../data/original_dset-ubyte.gz'  # path to dataset
-dset_size_dflt = 30000  # size of the dataset
-y_size_dflt = 20  # height of the grids
-x_size_dflt = 20  # width of the grids
+dset_size_dflt = 20000  # size of the dataset
+y_size_dflt = 24  # height of the grids
+x_size_dflt = 24  # width of the grids
 plot_path_dflt = '../data/original_dist.png'  # path to saved plot
 
 

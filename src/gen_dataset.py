@@ -1,5 +1,7 @@
 # this script can be used to generate the synthetic dataset
 # to train the first encoder of the chain
+#
+# one-peak distribution
 
 
 from chain_lib import positive_int
@@ -10,9 +12,9 @@ import numpy as np
 
 # default parameters
 dset_path_dflt = '../data/original_dset-ubyte.gz'  # path to save data
-dset_size_dflt = 30000  # size of the dataset
-y_size_dflt = 20  # height of the grids
-x_size_dflt = 20  # width of the grids
+dset_size_dflt = 20000  # size of the dataset
+y_size_dflt = 24  # height of the grids
+x_size_dflt = 24  # width of the grids
 y_dist_dflt = 'binomial'  # distribution of the y coordinates
 x_dist_dflt = 'binomial'  # distribution of the x coordinates
 
