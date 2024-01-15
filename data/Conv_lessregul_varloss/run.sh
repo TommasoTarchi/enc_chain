@@ -12,7 +12,7 @@ cd ../../src/ ||
 # data folders
 data_dir="../data/Conv_lessregul_varloss"
 base_model=Conv
-regularization=0.3  # regularization constant for the loss function
+regularization=0.7  # regularization constant for the loss function
 variability=10.0  # multiplicative constant of the variability term in loss
 
 # generating initial dataset

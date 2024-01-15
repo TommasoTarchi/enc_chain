@@ -9,3 +9,7 @@ data/**/report.out
 
 # script to run all simulations
 data/run_all.sh
+
+# notebooks for less important visualizatioin
+**/*.ipynb
+!src/show_grids.ipynb

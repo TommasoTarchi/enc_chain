@@ -1,27 +1,17 @@
-- in generale plottare (o magari solo descrivere) comportamento della loss function
-
 - sottolineare che con un solo pixel acceso le immagini prodotte erano molto tenui (e spiegare perché: probabilmente dipendeva dal calcolo del MSE durante il training)
 
 - suggerire che la costruzione di una catena di questo tipo è un buon criterio per trovare la costante di regolaizzazione nella loss ottimale
-
-- far notare che comunque i VAE sono in grado di catturare l'"essenza" di una distribuzione, anche se riducono la variabilità dei dataset
 
 - far notare (CONTROLLARE CHE SIA COSÌ) che migliorare la variabilità migliora anche la qualità delle immagini
 
 - far notare che i VAE asimmetrici aggravano il problema
 
-- descrivere bene il termine di variabilità nella loss
-
 - eventualmente far notare che l'interpolazione non risolve il problema perché non produce dati rappresentativi di quelli originali ma dati che hanno un misto delle caratteristiche dei dati originali
 
 - far notare che quelli trovati non sono i risultati ottimali, e che sicuramente si potrebbero migliorare facendo hyperparameter tuning; questi sono solo esempi per illustrare i metodi
 
-- far notare che, volendo, una catena di autoencoder semplice è un modo per ricavare le "caratteristiche medie" di un dataset (dato che le immagini finali catturano perfettamente l'immagine media del dataset)
-
-- far notare prima di tutto che le immagini sono più sfocate e che Conv è l'architettura che funziona megli
-
 - provare:
-    - Conv_std: 0.1, 0.3, 0.8, 0.9
+    - Conv_std: 0.3, 0.8, 0.9
     - Conv_std_denoise: vedi precedente
-    - Conv_varloss: incrementare
-    - Conv_lessregul_varloss: vedi precedente per varloss e ottimale trovato per lessregul
+
+- presentare la parte su denoising con lessregul e varloss come: qui abbiamo preso dei parametri che non danno risultati ottimali e abbiamo mostrato come il denoising può aiutare a migliorarli (tipo "a volte non siamo in grado di fare il tuning bene come vorremmo, e il denoisig in questo caso può aiutare; notare che, solitamente, peggiori sono i risultati e più è utile)

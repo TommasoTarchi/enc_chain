@@ -1,4 +1,4 @@
-# Enc\_Chain
+# Enc\_chain
 
 
 ***Work in progress...***
@@ -34,7 +34,7 @@ The repo is structured in the following way:
   scripts
   - `gen_dataset.py`: script that can be used to generate a syntetic dataset 
   with pixels turned on according to some (chosen) distribution (single-peaked)
-  - `gen_dataset_2peaks.py`: script that can be used to generate a syntetic 
+  - `gen_dataset_bimodal.py`: script that can be used to generate a syntetic 
   dataset with pixels turned on according to some (chosen) distribution 
   (double-peaked)
   - `make_chain.py`: script that can be used to run a (variable length) chain 
@@ -53,7 +53,7 @@ The repo is structured in the following way:
 `run.sh` scripts used to obtain them (zipped data are removed - only their 
 graphical representations are left); each subdirectory contains a `README.md`
 file with a description of the parameters used
-- `Presentiation.pdf`: slide presentation of the project
+- `Enc_chain-Presentiation.pdf`: slide presentation of the project
 
 
 ## General pipeline

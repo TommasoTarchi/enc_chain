@@ -10,16 +10,17 @@ cd ../../src/ ||
     exit
 
 # data folders
-data_dir="../data/Conv_std_denoise"
+data_dir="../data/Conv_lessregul_varloss_denoise"
 base_model=Conv
-std_increment=0.1  # increment on the stardard deviation in generative mode
+regularization=0.7  # regularization constant for the loss function
+variability=10.0  # multiplicative constant of the variability term in loss
 denoise_thres=0.05  # denoising threshold
 
 # generating initial dataset
 python3 gen_dataset.py --dset_path "${data_dir}/original_dset-ubyte.gz"
 
 # running autoencoders chain
-python3 make_chain.py --dset_dir "$data_dir" --model_type "$base_model" --std_increment "$std_increment" --denoise_thres "$denoise_thres"  >  "${data_dir}/report.out"
+python3 make_chain.py --dset_dir "$data_dir" --model_type "$base_model" --regul_const "$regularization" --var_const "$variability" --denoise_thres "$denoise_thres"  >  "${data_dir}/report.out"
 
 # computing distributions from datasets
 dset_path="${data_dir}/original_dset-ubyte.gz"
