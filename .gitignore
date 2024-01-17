@@ -10,6 +10,9 @@ data/**/report.out
 # script to run all simulations
 data/run_all.sh
 
-# notebooks for less important visualizatioin
+# notebooks for less important visualization
 **/*.ipynb
 !src/show_grids.ipynb
+
+# shorter presentation
+Enc_chain-Presentation-short.pdf

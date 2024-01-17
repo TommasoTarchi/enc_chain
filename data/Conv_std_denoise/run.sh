@@ -12,7 +12,7 @@ cd ../../src/ ||
 # data folders
 data_dir="../data/Conv_std_denoise"
 base_model=Conv
-std_increment=0.1  # increment on the stardard deviation in generative mode
+std_increment=0.4  # increment on the stardard deviation in generative mode
 denoise_thres=0.05  # denoising threshold
 
 # generating initial dataset

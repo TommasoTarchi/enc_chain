@@ -12,7 +12,7 @@ cd ../../src/ ||
 # data folders
 data_dir="../data/Conv_std"
 base_model=Conv
-std_increment=0.1  # increment on the stardard deviation in generative mode
+std_increment=0.4  # increment on the stardard deviation in generative mode
 
 # generating initial dataset
 python3 gen_dataset.py --dset_path "${data_dir}/original_dset-ubyte.gz"

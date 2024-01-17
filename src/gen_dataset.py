@@ -1,7 +1,7 @@
 # this script can be used to generate the synthetic dataset
 # to train the first encoder of the chain
 #
-# one-peak distribution
+# unimodal distribution
 
 
 from chain_lib import positive_int
