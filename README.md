@@ -16,7 +16,10 @@ one).
 
 The chain structure is used to amplify any possible systematic effect 
 introduced by VAEs and to discriminate distinguish systematic from random 
-effects. 
+effects.
+
+Then, some possible modifications to the standard VAE architecture are 
+designed (and implemented) to try to mitigate data variability loss.
 
 The outcome is interesting (**in my opinion**) because this is just a very 
 simple and particular example of a much broader topic, that is AI models
