@@ -15,8 +15,7 @@ on according to a given distribution (unimodal or bimodal, usually the first
 one).
 
 The chain structure is used to amplify any possible systematic effect 
-introduced by VAEs and to discriminate distinguish systematic from random 
-effects.
+introduced by VAEs and to distinguish systematic and random effects.
 
 Then, some possible modifications to the standard VAE architecture are 
 designed (and implemented) to try to mitigate data variability loss.
