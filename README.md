@@ -111,3 +111,10 @@ call to `make_chain.py`, in particular the elapsed time of each step of the chai
    is the tutorial I used to build VAEs
 2. [This article](https://mbernste.github.io/posts/vae/) explains how VAEs work
    more in detail
+
+
+## License
+
+- The source code in `src/` is released under the MIT License (see [LICENSE](LICENSE)).
+- The data in `data/` and `Enc_chain-Presentation.pdf` are released under the
+  Creative Commons Attribution 4.0 International License (see [LICENSE-CC-BY-4.0](LICENSE-CC-BY-4.0)).
